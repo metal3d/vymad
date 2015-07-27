@@ -1,4 +1,4 @@
-VERSION:=$(shell git describe --tags)
+VERSION:=$(shell git describe --tags | sed 's/v//g')
 OPTS:=-ldflags '-X main.VERSION $(VERSION)'
 
 all: clean dist linux freebsd darwin
