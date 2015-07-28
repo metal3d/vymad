@@ -1,8 +1,12 @@
 # Vymad
 
-Vymad is a markdown generator from "vym" file format. [Vym](http://www.insilmaril.de/vym/) (View Your Mind) is a very nice Mindmapping software for \*Nix environments. Writing a book, I was searching a way to easilly write content in Vym and to generate something that can be used by [Pandoc](http://pandoc.org/).
+Vymad was originally a markdown generator from "vym" file format. It is now able to use Freemind and Xmind format.
+
+[Vym](http://www.insilmaril.de/vym/) (View Your Mind) is a very nice Mindmapping software for \*Nix environments. Writing a book, I was searching a way to easilly write content in Vym and to generate something that can be used by [Pandoc](http://pandoc.org/).
 
 I decided to build my own in Go and to share this little tool to make your life easier :)
+
+**Note:** Freemind uses HTML to keep notes and I didn't find any solution to get plain text. You **must** have pandoc installed to let vymad tries to convert HTML to Markdown. Vym and Xmind are able to let notes to be "plain text" (especially Xmind which lets 2 blocks to get HTML and Plain text)
 
 # Installation
 
@@ -64,4 +68,10 @@ vymad myfile.vym | pandoc --toc --chapter -o book.pdf
 
 ```
 
+# TODO
 
+[] Add an option to tell vymad to get HTML instead of plain text to try to convert it to markdown
+[] Find a way to fix Freemind HTML to markdown - be able to not force pandoc usage (eg. give a command used for convertion)
+[] Add other Mindmap format if needed
+[] Code rewrite to use interfaces and ease plugins developpements
+[] Add option to run pandoc
