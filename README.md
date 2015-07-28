@@ -1,6 +1,6 @@
 # Vymad
 
-Vymad is a markdown generator from "vym" file format. Vym (View Your Mind) is a very nice Mindmapping software for \*Nix environments. Writing a book, I was searching a way to easilly write content in Vym and to generate something that cas be used by Pandoc.
+Vymad is a markdown generator from "vym" file format. [Vym](http://www.insilmaril.de/vym/) (View Your Mind) is a very nice Mindmapping software for \*Nix environments. Writing a book, I was searching a way to easilly write content in Vym and to generate something that can be used by [Pandoc](http://pandoc.org/).
 
 I decided to build my own in Go and to share this little tool to make your life easier :)
 
@@ -9,6 +9,8 @@ I decided to build my own in Go and to share this little tool to make your life 
 ## Built package
 
 I provide binary files for Linux, OSX and FreeBSD. You can download the specific binary for you environment from the release page:
+
+https://github.com/metal3d/vymad/releases
 
 ## With Go
 
