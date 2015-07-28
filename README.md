@@ -70,8 +70,8 @@ vymad myfile.vym | pandoc --toc --chapter -o book.pdf
 
 # TODO
 
-[] Add an option to tell vymad to get HTML instead of plain text to try to convert it to markdown
-[] Find a way to fix Freemind HTML to markdown - be able to not force pandoc usage (eg. give a command used for convertion)
-[] Add other Mindmap format if needed
-[] Code rewrite to use interfaces and ease plugins developpements
-[] Add option to run pandoc
+- [ ] Add an option to tell vymad to get HTML instead of plain text to try to convert it to markdown
+- [ ] Find a way to fix Freemind HTML to markdown - be able to not force pandoc usage (eg. give a command used for convertion)
+- [ ] Add other Mindmap format if needed
+- [ ] Code rewrite to use interfaces and ease plugins developpements
+- [ ] Add option to run pandoc
