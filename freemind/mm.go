@@ -5,10 +5,11 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
-	"os/exec"
 	"regexp"
 	"strings"
 	"text/template"
+
+	"github.com/metal3d/vymad/pandoc"
 )
 
 var PARTS = make([]string, 0)
@@ -28,32 +29,11 @@ func write(n *Node, level int) {
 
 	PARTS = append(PARTS, fmt.Sprintf("%s %s", strings.Repeat("#", level+1), n.Text))
 	if n.Content != "" {
-		cmd := exec.Command("/usr/bin/pandoc", "-f", "html", "-t", "markdown")
-
-		stdin, err := cmd.StdinPipe()
+		o, err := pandoc.Launch(n.Content, "markdown")
 		if err != nil {
 			panic(err)
 		}
-		stdout, err := cmd.StdoutPipe()
-		if err != nil {
-			panic(err)
-		}
-
-		if err := cmd.Start(); err != nil {
-			panic(err)
-		}
-
-		stdin.Write([]byte(n.Content))
-		stdin.Close()
-
-		if err != nil {
-			fmt.Println(err)
-		}
-		o, err := ioutil.ReadAll(stdout)
-		if err != nil {
-			panic(err)
-		}
-		PARTS = append(PARTS, string(o))
+		PARTS = append(PARTS, o)
 	}
 
 	if len(n.Nodes) > 0 {
@@ -64,7 +44,7 @@ func write(n *Node, level int) {
 
 }
 
-func Open(filename, tpl string) {
+func ExecuteTpl(filename, tpl string, richtext bool) {
 
 	content, _ := ioutil.ReadFile(filename)
 

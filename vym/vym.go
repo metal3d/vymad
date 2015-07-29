@@ -9,10 +9,15 @@ import (
 	"io/ioutil"
 	"strings"
 	"text/template"
+
+	"github.com/metal3d/vymad/pandoc"
 )
 
 // PARTS contains document lines.
-var PARTS = make([]string, 0)
+var (
+	PARTS    = make([]string, 0)
+	RICHTEXT = false
+)
 
 type VymMap struct {
 	MapCenter MapCenter `xml:"mapcenter"`
@@ -51,8 +56,20 @@ func doParts(b *Branch, level int) {
 
 	heading := b.Heading
 	PARTS = append(PARTS, fmt.Sprintf("%s %s", strings.Repeat("#", level+1), heading))
-	PARTS = append(PARTS, b.VymNote)
 
+	if RICHTEXT {
+		var (
+			o   string
+			err error
+		)
+		if o, err = pandoc.Launch(b.VymNote, "markdown"); err != nil {
+			panic(err)
+		}
+		PARTS = append(PARTS, o)
+
+	} else {
+		PARTS = append(PARTS, b.VymNote)
+	}
 	// parse children branches
 	if len(b.Branches) > 0 {
 		for _, b := range b.Branches {
@@ -85,7 +102,9 @@ func parseVymTree(v *VymMap, tpl string) {
 
 }
 
-func Open(filename string, tpl string) {
+func ExecuteTpl(filename, tpl string, richtext bool) {
+	RICHTEXT = richtext
+
 	// try to open file
 	r, err := zip.OpenReader(filename)
 	if err != nil {

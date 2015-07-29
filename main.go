@@ -20,12 +20,15 @@ const (
 )
 
 var (
-	VERSION = "master"
+	VERSION  = "master"
+	RICHTEXT = false
 )
 
 func main() {
 
 	v := flag.Bool("version", false, "print version")
+	flag.BoolVar(&RICHTEXT, "richtext", RICHTEXT, "Try to parse richtext (for vym and xmind, automatic for freemind)")
+
 	flag.Usage = func() {
 		fmt.Println("Usage of " + os.Args[0])
 		fmt.Println(os.Args[0] + " [options] file")
@@ -47,11 +50,11 @@ func main() {
 	}
 
 	if file[len(file)-3:] == ".mm" { // Freemind
-		freemind.Open(file, TPL)
+		freemind.ExecuteTpl(file, TPL, RICHTEXT)
 	} else if file[len(file)-4:] == ".vym" { // Vym
-		vym.Open(file, TPL)
+		vym.ExecuteTpl(file, TPL, RICHTEXT)
 	} else if file[len(file)-6:] == ".xmind" { //xmind
-		xmind.Open(file, TPL)
+		xmind.ExecuteTpl(file, TPL, RICHTEXT)
 	}
 
 }

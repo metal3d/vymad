@@ -44,8 +44,6 @@ vymad myfile.vym
 
 If the given file is a correct vym file, so the markdown content will be displayed.
 
-If you passed a zip file, vymad will search the first xml file at the root of the archive. If he find one, so it will try to parse.
-
 Note that vymad will never write something on the given file.
 
 To keep the output in a new file, simply use shell redirection:
@@ -68,9 +66,20 @@ vymad myfile.vym | pandoc --toc --chapter -o book.pdf
 
 ```
 
+# Notes about -richtext option
+
+The `-richtext` option is **experimental** - It may try to parse the "notes" from you minmap as HTML. To use this option, you **must** have installed "pandoc".
+
+Vymad will try to make some modification (in memory) to make notes parsables, then it will use pandoc to convert HTML to Markdown. At this time, there are a lot of problems:
+
+- some styles are not correctly detected
+- images are not extracted
+
+
 # TODO
 
-- [ ] Add an option to tell vymad to get HTML instead of plain text to try to convert it to markdown
+- [x] Add an option to tell vymad to get HTML instead of plain text to try to convert it to markdown (experimental)
+- [ ] Extract images from richtext
 - [ ] Find a way to fix Freemind HTML to markdown - be able to not force pandoc usage (eg. give a command used for convertion)
 - [ ] Add other Mindmap format if needed
 - [ ] Code rewrite to use interfaces and ease plugins developpements
