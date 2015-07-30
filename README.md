@@ -2,6 +2,10 @@
 
 Vymad converts MindMap to Markdown - nice to use with Pandoc !
 
+See it in action:
+
+https://www.youtube.com/watch?v=PruTOzDX3fs
+
 Vymad was originally a "markdown generator" from "vym" file format. It is now able to use Freemind and Xmind format.
 
 [Vym](http://www.insilmaril.de/vym/) (View Your Mind) is a very nice Mindmapping software for \*Nix environments. Writing a book, I was searching a way to easilly write content in Vym and to generate something that can be used by [Pandoc](http://pandoc.org/).
