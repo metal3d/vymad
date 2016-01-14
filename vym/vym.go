@@ -46,7 +46,10 @@ func xmlBuildStruct(r io.ReadCloser) *VymMap {
 		panic(err)
 	}
 	x := VymMap{}
-	xml.Unmarshal(c, &x)
+	if err := xml.Unmarshal(c, &x); err != nil {
+		panic(err)
+	}
+
 	return &x
 
 }
