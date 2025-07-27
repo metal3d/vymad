@@ -1,10 +1,12 @@
+// Package freemind provides a converter for FreeMind files to Markdown format.
 package freemind
 
 import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"os"
 	"regexp"
 	"strings"
 	"text/template"
@@ -26,7 +28,6 @@ type Node struct {
 }
 
 func write(n *Node, level int) {
-
 	PARTS = append(PARTS, fmt.Sprintf("%s %s", strings.Repeat("#", level+1), n.Text))
 	if n.Content != "" {
 		o, err := pandoc.Launch(n.Content, "markdown")
@@ -41,17 +42,22 @@ func write(n *Node, level int) {
 			write(&n, level+1)
 		}
 	}
-
 }
 
-func ExecuteTpl(filename, tpl string, richtext bool) {
-
-	content, _ := ioutil.ReadFile(filename)
+func ExecuteTpl(filename, tpl string, richtext bool) error {
+	fp, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	content, err := io.ReadAll(fp)
+	if err != nil {
+		return err
+	}
 
 	re := regexp.MustCompile(`<richcontent (.*)>`)
 
 	s := re.ReplaceAllString(string(content), "<richcontent><![CDATA[")
-	s = strings.Replace(s, "</richcontent>", "]]></richcontent>", -1)
+	s = strings.ReplaceAll(s, "</richcontent>", "]]></richcontent>")
 	content = []byte(s)
 
 	n := Map{}
@@ -73,5 +79,5 @@ func ExecuteTpl(filename, tpl string, richtext bool) {
 		"Content": strings.Join(PARTS, "\n\n"),
 	})
 	fmt.Println(buff)
-
+	return nil
 }

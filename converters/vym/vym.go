@@ -1,3 +1,4 @@
+// Package vym provides functions to parse Vym mind maps and convert them to markdown.
 package vym
 
 import (
@@ -6,7 +7,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 	"text/template"
 
@@ -39,9 +39,8 @@ type Branch struct {
 
 // build XML tree and return *VymMap.
 func xmlBuildStruct(r io.ReadCloser) *VymMap {
-
 	defer r.Close()
-	c, err := ioutil.ReadAll(r)
+	c, err := io.ReadAll(r)
 	if err != nil {
 		panic(err)
 	}
@@ -51,12 +50,10 @@ func xmlBuildStruct(r io.ReadCloser) *VymMap {
 	}
 
 	return &x
-
 }
 
 // Parse branches.
 func doParts(b *Branch, level int) {
-
 	heading := b.Heading
 	PARTS = append(PARTS, fmt.Sprintf("%s %s", strings.Repeat("#", level+1), heading))
 
@@ -79,12 +76,10 @@ func doParts(b *Branch, level int) {
 			doParts(&b, level+1)
 		}
 	}
-
 }
 
 // parse the VymMap tree to build markdown.
 func parseVymTree(v *VymMap, tpl string) {
-
 	// parse each mapcenter branches
 	for _, b := range v.MapCenter.Branch {
 		doParts(&b, 0)
@@ -102,16 +97,15 @@ func parseVymTree(v *VymMap, tpl string) {
 		panic(err)
 	}
 	fmt.Println(buff)
-
 }
 
-func ExecuteTpl(filename, tpl string, richtext bool) {
+func ExecuteTpl(filename, tpl string, richtext bool) error {
 	RICHTEXT = richtext
 
 	// try to open file
 	r, err := zip.OpenReader(filename)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer r.Close()
 
@@ -121,11 +115,11 @@ func ExecuteTpl(filename, tpl string, richtext bool) {
 		}
 		rc, err := f.Open()
 		if err != nil {
-			panic(err)
+			return err
 		}
 		x := xmlBuildStruct(rc)
 		parseVymTree(x, tpl)
 		break
 	}
-
+	return nil
 }

@@ -4,17 +4,20 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 
-	"github.com/metal3d/vymad/freemind"
-	"github.com/metal3d/vymad/vym"
-	"github.com/metal3d/vymad/xmind"
+	"github.com/metal3d/vymad/converters"
+	"github.com/metal3d/vymad/converters/freemind"
+	"github.com/metal3d/vymad/converters/minder"
+	"github.com/metal3d/vymad/converters/vym"
+	"github.com/metal3d/vymad/converters/xmind"
 )
 
 // TPL is the main file content template.
 const (
-	TPL = `% {{ .Title }}
+	TPL = `% {{ .Title | html }}
 
-{{ .Content }}
+{{ .Content | html }}
 
 `
 )
@@ -25,7 +28,6 @@ var (
 )
 
 func main() {
-
 	v := flag.Bool("version", false, "print version")
 	flag.BoolVar(&RICHTEXT, "richtext", RICHTEXT, "Try to parse richtext (for vym and xmind, automatic for freemind)")
 
@@ -45,16 +47,29 @@ func main() {
 	file := flag.Arg(0)
 
 	if file == "" {
-		fmt.Println("You must provide a vym file")
+		fmt.Println("You must provide a file")
 		os.Exit(1)
 	}
 
-	if file[len(file)-3:] == ".mm" { // Freemind
-		freemind.ExecuteTpl(file, TPL, RICHTEXT)
-	} else if file[len(file)-4:] == ".vym" { // Vym
-		vym.ExecuteTpl(file, TPL, RICHTEXT)
-	} else if file[len(file)-6:] == ".xmind" { //xmind
-		xmind.ExecuteTpl(file, TPL, RICHTEXT)
+	ext := filepath.Ext(file)
+
+	var converter converters.Converter
+	switch ext {
+	case ".mm":
+		converter = freemind.ExecuteTpl
+	case ".vym":
+		converter = vym.ExecuteTpl
+	case ".xmind":
+		converter = xmind.ExecuteTpl
+	case ".minder":
+		converter = minder.ExecuteTpl
+	default:
+		fmt.Println("Unknown file extension:", ext)
+		return
 	}
 
+	if err := converter(file, TPL, RICHTEXT); err != nil {
+		fmt.Println("Error executing template:", err)
+		os.Exit(1)
+	}
 }

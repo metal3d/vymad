@@ -1,15 +1,13 @@
-// Lanch pandoc and get results
+// Package pandoc calls the pandoc command line tool to convert content from one format to another.
 package pandoc
 
 import (
-	"fmt"
-	"io/ioutil"
+	"io"
 	"os/exec"
 )
 
 // Launch pandoc and returns content translated to given format
 func Launch(content, format string) (string, error) {
-
 	cmd := exec.Command("pandoc", "-f", "html", "-t", format)
 
 	stdin, err := cmd.StdinPipe()
@@ -26,12 +24,9 @@ func Launch(content, format string) (string, error) {
 	}
 
 	stdin.Write([]byte(content))
-	stdin.Close()
+	defer stdin.Close()
 
-	if err != nil {
-		fmt.Println(err)
-	}
-	o, err := ioutil.ReadAll(stdout)
+	o, err := io.ReadAll(stdout)
 	if err != nil {
 		return "", err
 	}

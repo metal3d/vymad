@@ -1,3 +1,4 @@
+// Package xmind provides functions to parse XMind files and extract their content.
 package xmind
 
 import (
@@ -6,7 +7,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"regexp"
 	"strings"
 	"text/template"
@@ -27,7 +27,7 @@ type XMapStyle struct {
 
 type Style struct {
 	XMLName    xml.Name   `xml:"style"`
-	Id         string     `xml:"id,attr"`
+	ID         string     `xml:"id,attr"`
 	Properties []Property `xml:"text-properties"`
 }
 
@@ -53,16 +53,15 @@ type Topic struct {
 	Title   string   `xml:"title"`
 
 	Content string `xml:"notes>plain"`
-	Html    string `xml:"notes>html"`
+	HTML    string `xml:"notes>html"`
 
 	Children []Topic `xml:"children>topics>topic"`
 }
 
 func buildXMLTree(rc io.ReadCloser) *Xmap {
-
 	defer rc.Close()
 
-	c, err := ioutil.ReadAll(rc)
+	c, err := io.ReadAll(rc)
 
 	// replace html content to chardata
 	re := regexp.MustCompile(`<notes><html>(.*?)</html>`)
@@ -75,11 +74,9 @@ func buildXMLTree(rc io.ReadCloser) *Xmap {
 	x := Xmap{}
 	xml.Unmarshal(c, &x)
 	return &x
-
 }
 
 func build(ff *zip.File) string {
-
 	rc, err := ff.Open()
 	if err != nil {
 		panic(err)
@@ -95,14 +92,13 @@ func build(ff *zip.File) string {
 }
 
 func parseStyles(f *zip.File) {
-
 	s, err := f.Open()
 	if err != nil {
 		panic(err)
 	}
 
 	x := XMapStyle{}
-	content, err := ioutil.ReadAll(s)
+	content, err := io.ReadAll(s)
 	if err != nil {
 		panic(err)
 	}
@@ -122,7 +118,7 @@ func parseStyles(f *zip.File) {
 				mdmark = append(mdmark, "strong")
 			}
 
-			STYLES[s.Id] = append(STYLES[s.Id], mdmark...)
+			STYLES[s.ID] = append(STYLES[s.ID], mdmark...)
 		}
 
 	}
@@ -130,7 +126,6 @@ func parseStyles(f *zip.File) {
 }
 
 func replaceStyles(content string) string {
-
 	content = strings.Replace(content, "<span\n", "<span", -1)
 	for id, s := range STYLES {
 		found := true
@@ -163,7 +158,7 @@ func parse(t Topic, level int) {
 			o   string
 			err error
 		)
-		if o, err = pandoc.Launch(t.Html, "html"); err != nil {
+		if o, err = pandoc.Launch(t.HTML, "html"); err != nil {
 			panic(err)
 		}
 		o = replaceStyles(o)
@@ -181,11 +176,11 @@ func parse(t Topic, level int) {
 	}
 }
 
-func ExecuteTpl(file, tpl string, richtext bool) {
+func ExecuteTpl(file, tpl string, richtext bool) error {
 	RICHTEXT = richtext
 	r, err := zip.OpenReader(file)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	defer r.Close()
@@ -211,5 +206,5 @@ func ExecuteTpl(file, tpl string, richtext bool) {
 	})
 
 	fmt.Println(buff)
-
+	return nil
 }
